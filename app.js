@@ -52,6 +52,32 @@ app.post('/api/v1/tours', (req, res) => {
    });
 });
 
+/**
+ * define variable via URL :id
+ * it can be added a lot of variables: :id/:x/:y
+ * if you want to make it option you just add '?'
+ * :id/:x/:y?
+ */
+app.get('/api/v1/tours/:id', (req, res) => {
+
+   const id = parseInt(req.params.id);
+   const tour = tours.find(item => item.id === id);
+
+   if (id > tours.length) {
+      return res.status(404).json({
+         status: 'failed',
+         message: 'Invalid ID'
+      });
+   }
+
+   res.status(200).json({
+      status: 'success',
+      data: {
+         tour
+      }
+   });
+});
+
 const port = 3000;
 app.listen(port, () => {
    console.log('starting application...');
