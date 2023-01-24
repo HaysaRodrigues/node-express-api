@@ -78,6 +78,32 @@ app.get('/api/v1/tours/:id', (req, res) => {
    });
 });
 
+/**
+ * there are two http method to update: put & patch
+ * put: is expected to receive all the values when we sent to the application
+ * patch: is only expected the properties we need to update
+ */
+app.patch('/api/v1/tours/:id', (req, res) => {
+   const id = parseInt(req.params.id);
+   const newTour = Object.assign(({ id: id }, req.body));
+
+   if (id > tours.length) {
+      res.status(404).json({
+         status: 'fail',
+         data: {
+            tour: 'Invalid ID'
+         }
+      })
+   };
+
+   res.status(200).json({
+      status: 'success',
+      data: {
+         tour: newTour
+      }
+   })
+});
+
 const port = 3000;
 app.listen(port, () => {
    console.log('starting application...');
