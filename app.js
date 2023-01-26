@@ -104,6 +104,34 @@ app.patch('/api/v1/tours/:id', (req, res) => {
    })
 });
 
+/**
+ * to delete a register you only need use delete
+ * and implement the logic to delete in your database
+ *
+ * even in the real world we are going
+ * to send 204 code for when it's deleted
+ */
+
+app.delete('/api/v1/tours/:id', (req, res) => {
+   const id = parseInt(req.params.id);
+
+   if (id > tours.length) {
+      res.status(404).json({
+         status: 'fail',
+         data: {
+            tour: 'Invalid ID'
+         }
+      })
+   };
+
+   res.status(204).json({
+      status: 'success',
+      data: {
+         tour: null
+      }
+   })
+});
+
 const port = 3000;
 app.listen(port, () => {
    console.log('starting application...');
