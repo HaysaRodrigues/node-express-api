@@ -20,7 +20,33 @@ const tours = JSON.parse(
  * so we need to get the data before the endpoints
  */
 
-app.get('/api/v1/tours', (req, res) => {
+/**
+ * normally it follows the same name we just need to change the method type but the main route remains the same
+ */
+
+/**
+ * define variable via URL :id
+ * it can be added a lot of variables: :id/:x/:y
+ * if you want to make it option you just add '?'
+ * :id/:x/:y?
+ */
+
+/**
+ * there are two http method to update: put & patch
+ * put: is expected to receive all the values when we sent to the application
+ * patch: is only expected the properties we need to update
+ */
+
+/**
+ * to delete a register you only need use delete
+ * and implement the logic to delete in your database
+ *
+ * even in the real world we are going
+ * to send 204 code for when it's deleted
+ */
+
+
+const getTours = (req, res) => {
    res.status(200).json({
       status: 'success',
       results: tours.length, // this attribute only makes sense if you are sending an array
@@ -28,18 +54,14 @@ app.get('/api/v1/tours', (req, res) => {
          tours
       }
    })
-});
+}
 
-/**
- * normally it follows the same name we just need to change the method type
- */
-app.post('/api/v1/tours', (req, res) => {
+const createTour = (req, res) => {
    console.log(req.body);
-   //database adds the id for the item being add automatically but since we
+   //database adds the id for the item being adding automatically but since we
    //don't have the id, we will make it manually
-
    const newId = tours[tours.length - 1].id + 1;
-   const newTour = Object.assign(({ id: newId }, req.body));
+   const newTour = Object.assign(({id: newId}, req.body));
 
    tours.push(newTour);
    fs.writeFile(`${__dirname}/dev-data/data/tours-simple.json`, JSON.stringify(tours), err => {
@@ -50,15 +72,9 @@ app.post('/api/v1/tours', (req, res) => {
          }
       });
    });
-});
+};
 
-/**
- * define variable via URL :id
- * it can be added a lot of variables: :id/:x/:y
- * if you want to make it option you just add '?'
- * :id/:x/:y?
- */
-app.get('/api/v1/tours/:id', (req, res) => {
+const getById = (req, res) => {
 
    const id = parseInt(req.params.id);
    const tour = tours.find(item => item.id === id);
@@ -76,14 +92,9 @@ app.get('/api/v1/tours/:id', (req, res) => {
          tour
       }
    });
-});
+}
 
-/**
- * there are two http method to update: put & patch
- * put: is expected to receive all the values when we sent to the application
- * patch: is only expected the properties we need to update
- */
-app.patch('/api/v1/tours/:id', (req, res) => {
+const updateTour = (req, res) => {
    const id = parseInt(req.params.id);
    const newTour = Object.assign(({ id: id }, req.body));
 
@@ -94,7 +105,7 @@ app.patch('/api/v1/tours/:id', (req, res) => {
             tour: 'Invalid ID'
          }
       })
-   };
+   }
 
    res.status(200).json({
       status: 'success',
@@ -102,17 +113,9 @@ app.patch('/api/v1/tours/:id', (req, res) => {
          tour: newTour
       }
    })
-});
+}
 
-/**
- * to delete a register you only need use delete
- * and implement the logic to delete in your database
- *
- * even in the real world we are going
- * to send 204 code for when it's deleted
- */
-
-app.delete('/api/v1/tours/:id', (req, res) => {
+const deleteTour = (req, res) => {
    const id = parseInt(req.params.id);
 
    if (id > tours.length) {
@@ -122,7 +125,7 @@ app.delete('/api/v1/tours/:id', (req, res) => {
             tour: 'Invalid ID'
          }
       })
-   };
+   }
 
    res.status(204).json({
       status: 'success',
@@ -130,7 +133,18 @@ app.delete('/api/v1/tours/:id', (req, res) => {
          tour: null
       }
    })
-});
+}
+
+app
+    .route('/api/v1/tours')
+    .get(getTours)
+    .post(createTour);
+
+app
+    .route('/api/v1/tours/:id')
+    .get(getById)
+    .patch(updateTour)
+    .delete(deleteTour);
 
 const port = 3000;
 app.listen(port, () => {
